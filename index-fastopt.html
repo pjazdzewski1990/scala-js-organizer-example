@@ -6,17 +6,10 @@
 </head>
 <body>
 
-<h1>Example Scala.js application - fast-optimized version</h1>
+<div id="playground"> </div>
 
-<p>After having compiled and fast-optimized properly the code for the application
-(using `sbt fastOptJS`), you should see "It works" herebelow.
-See README.md for detailed explanations.</p>
-
-<div id="playground">
-</div>
-
-<script type="text/javascript" src="./target/scala-2.11/example-fastopt.js"></script>
-<script type="text/javascript" src="./target/scala-2.11/example-launcher.js"></script>
-
+<script type="text/javascript" src="./target/scala-2.11/scala-js-organizer-fastopt.js"></script>
+<!--<script type="text/javascript" src="./target/scala-2.11/example-launcher.js"></script>-->
+<script>example.ScalaJSExample().main(document.getElementById('playground'));</script>
 </body>
 </html>
