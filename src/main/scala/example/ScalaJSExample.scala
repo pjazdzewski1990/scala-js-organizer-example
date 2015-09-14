@@ -17,7 +17,7 @@ object ScalaJSExample extends {
 
   val addDesc = input("New Task").render
   val addTime = input("0").render
-  val addButton = button("Add a new task").render
+  val addButton = button("Add a new task", `type`:="button", `class`:="btn btn-primary", marginTop:=10, marginBottom:=10).render
   val timeSummary = div().render
 
   @JSExport
@@ -50,17 +50,22 @@ object ScalaJSExample extends {
       h1("Scala.js organizer"),
       ul(
         for (it <- thingsToDo) yield
-          li( div(
-            s"${it.desc} takes ${it.time} minutes",
-            createDeleteButton(target, it)
-          ) )
+          li(
+            div(
+              s"${it.desc} takes ${it.time} minutes",
+              createDeleteButton(target, it)
+            ),
+            `class` := "list-group-item"
+          ),
+        `class` := "list-group"
       ),
       addForm,
-      timeSummary
+      timeSummary,
+      `class`:="col-sm-4"
     ).render
 
   def createDeleteButton(target: Div, it: Task) = {
-    val b = button("X").render
+    val b = button("X", `class`:="btn btn-sm btn-danger", float.right, marginTop:= -5).render
     b.onclick = (_: MouseEvent) => {
       thingsToDo = thingsToDo.filterNot(_ == it)
       refreshScreen(target)
