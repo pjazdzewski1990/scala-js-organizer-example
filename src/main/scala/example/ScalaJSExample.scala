@@ -10,10 +10,19 @@ import scala.util.Try
 import scalajs.js.annotation.JSExport
 import scalatags.JsDom.all._
 
+import upickle.default._
+
+import dom.ext._
+import scala.scalajs
+  .concurrent
+  .JSExecutionContext
+  .Implicits
+  .runNow
+
 @JSExport
 object ScalaJSExample extends {
 
-  var thingsToDo = List(Task("Task1", 30), Task("Task2", 45))
+  var thingsToDo = List[Task]()
 
   val addDesc = input("New Task").render
   val addTime = input("0").render
@@ -23,6 +32,13 @@ object ScalaJSExample extends {
   @JSExport
   def main(target: html.Div): Unit = {
     println(s"main")
+
+    fetchData().onSuccess {
+      case s =>
+        println(s"Got ${s.responseText}")
+        thingsToDo = read[List[Task]](s.responseText)
+        refreshScreen(target)
+    }
 
     addButton.onclick = (x: MouseEvent) => {
       val desc = addDesc.value
@@ -34,8 +50,11 @@ object ScalaJSExample extends {
     }
 
     refreshScreen(target)
-    dom.setInterval(refreshTimeSummary(target) _, 60 * 1000 / 100)
+    dom.setInterval(refreshTimeSummary(target) _, 600)
   }
+
+  def fetchData() =
+    Ajax.get("https://sizzling-torch-788.firebaseio.com/dummyTask.json")
 
   def refreshScreen(target: Div): Unit = {
     target.innerHTML = ""
@@ -69,6 +88,7 @@ object ScalaJSExample extends {
     b.onclick = (_: MouseEvent) => {
       thingsToDo = thingsToDo.filterNot(_ == it)
       refreshScreen(target)
+      refreshTimeSummary(target)
     }
     b
   }
@@ -86,7 +106,11 @@ object ScalaJSExample extends {
     val endDate = new Date(now.getTime() + timeNeeded*60000)
 
     timeSummary.innerHTML = s"${format(now)} + ${timeNeeded} minutes on tasks = ${format(endDate)}"
-    if(thingsToDo.length > 5) timeSummary.style.backgroundColor = "red"
+    if(thingsToDo.length > 5) {
+      timeSummary.style.backgroundColor = Color.Red
+    } else {
+      timeSummary.style.backgroundColor = Color.White
+    }
   }
 }
 
